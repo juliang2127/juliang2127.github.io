@@ -14,7 +14,7 @@ section { margin-bottom:2rem; }
 .hero-image {
     display: block;               /* so margin auto works */
     max-width: 100%;              /* never overflow its container */
-    width: 600px;                 /* your “ideal” width */
+    width: 300px;                 /* your “ideal” width */
     height: auto;                 /* keep aspect ratio */
     margin: 2rem auto;            /* vertical spacing + horizontal centering */
     border-radius: 8px;           /* smooth corners */
