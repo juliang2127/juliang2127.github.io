@@ -11,5 +11,22 @@ header nav a { margin:0 1rem; text-decoration:none; color:#007acc; }
 main { max-width:800px; margin:2rem auto; padding:0 1rem; }
 section { margin-bottom:2rem; }
 
+.hero-image {
+    display: block;               /* so margin auto works */
+    max-width: 100%;              /* never overflow its container */
+    width: 600px;                 /* your “ideal” width */
+    height: auto;                 /* keep aspect ratio */
+    margin: 2rem auto;            /* vertical spacing + horizontal centering */
+    border-radius: 8px;           /* smooth corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* subtle depth */
+    object-fit: cover;            /* if you ever set width/height explicitly */
+  }
+  
+  /* Optional: add a small hover effect */
+  .hero-image:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+  }
+
 /* footer */
 footer { text-align:center; padding:1rem 0; font-size:0.9rem; color:#666; }
