@@ -11,15 +11,19 @@ header nav a { margin:0 1rem; text-decoration:none; color:#007acc; }
 main { max-width:800px; margin:2rem auto; padding:0 1rem; }
 section { margin-bottom:2rem; }
 
-.hero-image {
-    display: block;               /* so margin auto works */
-    max-width: 100%;              /* never overflow its container */
-    width: 300px;                 /* your “ideal” width */
-    height: auto;                 /* keep aspect ratio */
-    margin: 2rem auto;            /* vertical spacing + horizontal centering */
-    border-radius: 8px;           /* smooth corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* subtle depth */
-    object-fit: cover;            /* if you ever set width/height explicitly */
+  .hero-image {
+    display: block;        /* so margin:  ○ auto centers it */
+    width: 300px;          /* new, smaller fixed width */
+    max-width: 100%;       /* still mobile-friendly */
+    height: auto;          /* preserve aspect ratio */
+    margin: 2rem auto;     /* vertical spacing + center */
+    border-radius: 8px;    /* smooth corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .hero-image:hover {
+    transform: scale(1.02);
   }
   
   /* Optional: add a small hover effect */
