@@ -41,20 +41,58 @@
 
 <div id="error-msg" class="error" style="display:none"></div>
 <div class="stats">
-  <div class="stat"><div class="stat-val" id="stat-km">—</div><div class="stat-lbl">km ridden</div></div>
-  <div class="stat"><div class="stat-val" id="stat-countries">—</div><div class="stat-lbl">countries</div></div>
-  <div class="stat"><div class="stat-val" id="stat-steps">—</div><div class="stat-lbl">steps logged</div></div>
-  <div class="stat"><div class="stat-val" id="stat-days">—</div><div class="stat-lbl">days on the road</div></div>
+  <div class="stat"><div class="stat-val" id="stat-km">—</div><div class="stat-lbl" id="lbl-km"></div></div>
+  <div class="stat"><div class="stat-val" id="stat-countries">—</div><div class="stat-lbl" id="lbl-countries"></div></div>
+  <div class="stat"><div class="stat-val" id="stat-steps">—</div><div class="stat-lbl" id="lbl-steps"></div></div>
+  <div class="stat"><div class="stat-val" id="stat-days">—</div><div class="stat-lbl" id="lbl-days"></div></div>
 </div>
 
 <div id="map"></div>
-<div class="section-label">All steps — click to jump map</div>
-<div class="steps-list" id="steps-list"><div class="loading">Loading trip data…</div></div>
+<div class="section-label" id="section-label"></div>
+<div class="steps-list" id="steps-list"></div>
 
 <script>
 const PROXY = 'https://polarsteps-proxy.iamjfree.workers.dev';
 const USERNAME = 'JulianG21';
 const DEPARTURE = new Date('2025-11-20');
+
+const LANG = new URLSearchParams(location.search).get('lang') === 'es' ? 'es' : 'en';
+
+const STRINGS = {
+  en: {
+    km: 'km ridden',
+    countries: 'countries',
+    steps: 'steps logged',
+    days: 'days on the road',
+    allSteps: 'All steps — click to jump map',
+    loading: 'Loading trip data…',
+    noTrip: 'No trip data found.',
+    noSteps: 'No steps with location data.',
+    couldNotLoad: 'Could not load trip: ',
+    watchTikTok: '&#9654; Watch on TikTok',
+    tiktokBtn: '&#9654; TikTok'
+  },
+  es: {
+    km: 'km recorridos',
+    countries: 'países',
+    steps: 'paradas registradas',
+    days: 'días en el camino',
+    allSteps: 'Todas las paradas — clic para ver en el mapa',
+    loading: 'Cargando datos del viaje…',
+    noTrip: 'No se encontraron datos del viaje.',
+    noSteps: 'No hay paradas con datos de ubicación.',
+    couldNotLoad: 'No se pudo cargar el viaje: ',
+    watchTikTok: '&#9654; Ver en TikTok',
+    tiktokBtn: '&#9654; TikTok'
+  }
+}[LANG];
+
+document.getElementById('lbl-km').textContent = STRINGS.km;
+document.getElementById('lbl-countries').textContent = STRINGS.countries;
+document.getElementById('lbl-steps').textContent = STRINGS.steps;
+document.getElementById('lbl-days').textContent = STRINGS.days;
+document.getElementById('section-label').textContent = STRINGS.allSteps;
+document.getElementById('steps-list').innerHTML = '<div class="loading">' + STRINGS.loading + '</div>';
 
 const FLAGS = { US:'🇺🇸', MX:'🇲🇽', GT:'🇬🇹', SV:'🇸🇻', HN:'🇭🇳', NI:'🇳🇮', CR:'🇨🇷', PA:'🇵🇦', CO:'🇨🇴', EC:'🇪🇨', PE:'🇵🇪', BO:'🇧🇴', CL:'🇨🇱', AR:'🇦🇷' };
 
@@ -95,10 +133,10 @@ function makeIcon(color, size) {
 
 function renderTrip(data) {
   const trip = data.trips && data.trips[0];
-  if (!trip) { showError('No trip data found.'); return; }
+  if (!trip) { showError(STRINGS.noTrip); return; }
 
   const steps = (trip.steps || []).filter(function(s) { return s.location && s.location.lat && s.location.lon; });
-  if (!steps.length) { showError('No steps with location data.'); return; }
+  if (!steps.length) { showError(STRINGS.noSteps); return; }
 
   document.getElementById('stat-km').textContent = Math.round(trip.total_km || 0).toLocaleString() + '+';
   document.getElementById('stat-countries').textContent = data.stats ? data.stats.country_count : '—';
@@ -126,7 +164,7 @@ function renderTrip(data) {
     var popHtml = '<div style="font-size:13px;min-width:140px"><strong>' + name + '</strong><br>'
       + '<span style="color:#888">' + flag + ' ' + (s.location.full_detail || '') + '</span><br>'
       + '<span style="color:#aaa;font-size:11px">' + date + '</span>'
-      + (ttUrl ? '<br><a href="' + ttUrl + '" target="_blank" style="display:inline-block;margin-top:6px;font-size:11px;color:#fff;background:#000;border-radius:4px;padding:3px 8px;text-decoration:none">&#9654; Watch on TikTok</a>' : '')
+      + (ttUrl ? '<br><a href="' + ttUrl + '" target="_blank" style="display:inline-block;margin-top:6px;font-size:11px;color:#fff;background:#000;border-radius:4px;padding:3px 8px;text-decoration:none">' + STRINGS.watchTikTok + '</a>' : '')
       + '</div>';
     m.bindPopup(popHtml, { maxWidth: 240 });
     markers.push(m);
@@ -151,7 +189,7 @@ function renderTrip(data) {
       + '<div class="step-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + name + '</div>'
       + '<div class="step-detail">' + flag + ' ' + (s.location.full_detail || '') + ' · ' + date + '</div>'
       + '</div>'
-      + (ttUrl ? '<a class="tt-btn" href="' + ttUrl + '" target="_blank" onclick="event.stopPropagation()">&#9654; TikTok</a>' : '')
+      + (ttUrl ? '<a class="tt-btn" href="' + ttUrl + '" target="_blank" onclick="event.stopPropagation()">' + STRINGS.tiktokBtn + '</a>' : '')
       + '<div class="step-num">#' + (i+1) + '</div>';
 
     row.addEventListener('click', function() {
@@ -179,7 +217,7 @@ async function loadTrip() {
     if (data.error) throw new Error(data.message || data.error);
     renderTrip(data);
   } catch (e) {
-    showError('Could not load trip: ' + e.message);
+    showError(STRINGS.couldNotLoad + e.message);
     document.getElementById('steps-list').innerHTML = '';
   }
 }
