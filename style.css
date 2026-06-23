@@ -292,6 +292,20 @@ body.solo {
   margin-bottom: 0.8rem;
 }
 
+.chapter-title a,
+.bike-name a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.chapter-title a:hover,
+.bike-name a:hover {
+  color: var(--solo-accent);
+  border-bottom-color: var(--solo-accent);
+}
+
 .chapter-text {
   font-size: 0.95rem;
   color: #444;
@@ -355,6 +369,36 @@ body.solo {
   font-size: 0.78rem;
   color: var(--solo-muted);
   border-top: 1px solid var(--solo-rule);
+}
+
+/* ── BLOG POST ── */
+
+.post-date {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--solo-muted);
+  margin-bottom: 2rem;
+  border-top: 1px solid var(--solo-rule);
+  padding-top: 2rem;
+}
+
+.post-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.post-photo {
+  background: #ddd8d0;
+  aspect-ratio: 3/2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--solo-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 2.5rem 0;
 }
 
 @media (max-width: 620px) {
