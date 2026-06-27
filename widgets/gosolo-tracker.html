@@ -29,6 +29,8 @@
   .step-num { font-size: 11px; color: #bbb; min-width: 22px; text-align: right; }
   .tt-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #fff; background: #000; border-radius: 4px; padding: 3px 7px; text-decoration: none; flex-shrink: 0; white-space: nowrap; }
   .tt-btn:hover { background: #333; }
+  .ig-btn { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #fff; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); border-radius: 4px; padding: 3px 7px; text-decoration: none; flex-shrink: 0; white-space: nowrap; }
+  .ig-btn:hover { opacity: 0.88; }
   .loading { text-align: center; padding: 2rem; color: #888; font-size: 14px; }
   .error { text-align: center; padding: 1rem; color: #c0392b; font-size: 13px; background: #fdf0f0; border-radius: 8px; margin-bottom: 10px; }
   @media (max-width: 480px) {
@@ -57,6 +59,7 @@ const USERNAME = 'JulianG21';
 const DEPARTURE = new Date('2025-11-20');
 
 const LANG = new URLSearchParams(location.search).get('lang') === 'es' ? 'es' : 'en';
+const PLATFORM = new URLSearchParams(location.search).get('platform') === 'instagram' ? 'instagram' : 'tiktok';
 
 const STRINGS = {
   en: {
@@ -70,7 +73,9 @@ const STRINGS = {
     noSteps: 'No steps with location data.',
     couldNotLoad: 'Could not load trip: ',
     watchTikTok: '&#9654; Watch on TikTok',
-    tiktokBtn: '&#9654; TikTok'
+    tiktokBtn: '&#9654; TikTok',
+    watchInstagram: '&#9654; Watch on Instagram',
+    igBtn: '&#9654; Instagram'
   },
   es: {
     km: 'km recorridos',
@@ -83,7 +88,9 @@ const STRINGS = {
     noSteps: 'No hay paradas con datos de ubicación.',
     couldNotLoad: 'No se pudo cargar el viaje: ',
     watchTikTok: '&#9654; Ver en TikTok',
-    tiktokBtn: '&#9654; TikTok'
+    tiktokBtn: '&#9654; TikTok',
+    watchInstagram: '&#9654; Ver en Instagram',
+    igBtn: '&#9654; Instagram'
   }
 }[LANG];
 
@@ -97,21 +104,188 @@ document.getElementById('steps-list').innerHTML = '<div class="loading">' + STRI
 const FLAGS = { US:'🇺🇸', MX:'🇲🇽', GT:'🇬🇹', SV:'🇸🇻', HN:'🇭🇳', NI:'🇳🇮', CR:'🇨🇷', PA:'🇵🇦', CO:'🇨🇴', EC:'🇪🇨', PE:'🇵🇪', BO:'🇧🇴', CL:'🇨🇱', AR:'🇦🇷' };
 
 const TIKTOKS = {
-  'New York':               'https://www.tiktok.com/@julesgoessolo/video/7584970202278792462',
-  'Rehoboth Beach':         'https://www.tiktok.com/@julesgoessolo/video/7585660426013166861',
-  'Virginia Beach':         'https://www.tiktok.com/@julesgoessolo/video/7586504715546922254',
-  'Goose Creek State Park': 'https://www.tiktok.com/@julesgoessolo/video/7587194457804557623',
-  'Carolina Beach':         'https://www.tiktok.com/@julesgoessolo/video/7588268170268429623',
-  'Murrells Inlet':         'https://www.tiktok.com/@julesgoessolo/video/7589044396394319118',
-  'Charleston':             'https://www.tiktok.com/@julesgoessolo/video/7589818613813546253',
-  'Auburn':                 'https://www.tiktok.com/@julesgoessolo/video/7590595816746683703',
-  'Laurel':                 'https://www.tiktok.com/@julesgoessolo/video/7592099348834536759',
-  'South Toledo Bend':      'https://www.tiktok.com/@julesgoessolo/video/7592800761512316173',
-  'Crockett':               'https://www.tiktok.com/@julesgoessolo/video/7593536363211803917',
-  'Somerville':             'https://www.tiktok.com/@julesgoessolo/video/7594619890409950477',
-  'Austin':                 'https://www.tiktok.com/@julesgoessolo/video/7595003828206963982',
-  'New Braunfels':          'https://www.tiktok.com/@julesgoessolo/video/7596545750813658382',
-  'Helotes':                'https://www.tiktok.com/@julesgoessolo/video/7597952723614551310',
+  'New York':                       'https://www.tiktok.com/@julesgoessolo/video/7584970202278792462',
+  'Rehoboth Beach':                 'https://www.tiktok.com/@julesgoessolo/video/7585660426013166861',
+  'Virginia Beach':                 'https://www.tiktok.com/@julesgoessolo/video/7586504715546922254',
+  'Goose Creek State Park':         'https://www.tiktok.com/@julesgoessolo/video/7587194457804557623',
+  'Carolina Beach':                 'https://www.tiktok.com/@julesgoessolo/video/7588268170268429623',
+  'Murrells Inlet':                 'https://www.tiktok.com/@julesgoessolo/video/7589044396394319118',
+  'Charleston':                     'https://www.tiktok.com/@julesgoessolo/video/7589818613813546253',
+  'Auburn':                         'https://www.tiktok.com/@julesgoessolo/video/7590595816746683703',
+  'Laurel':                         'https://www.tiktok.com/@julesgoessolo/video/7592099348834536759',
+  'South Toledo Bend':              'https://www.tiktok.com/@julesgoessolo/video/7592800761512316173',
+  'Crockett':                       'https://www.tiktok.com/@julesgoessolo/video/7593536363211803917',
+  'Somerville':                     'https://www.tiktok.com/@julesgoessolo/video/7594619890409950477',
+  'Austin':                         'https://www.tiktok.com/@julesgoessolo/video/7595003828206963982',
+  'New Braunfels':                  'https://www.tiktok.com/@julesgoessolo/video/7596545750813658382',
+  'Helotes':                        'https://www.tiktok.com/@julesgoessolo/video/7597952723614551310',
+  'Del Rio':                        'https://www.tiktok.com/@julianvasolo/video/7598714005460503826',
+  'Monclova':                       'https://www.tiktok.com/@julianvasolo/video/7599467209064303890',
+  'Saltillo':                       'https://www.tiktok.com/@julianvasolo/video/7600215751579995412',
+  'Hidalgo':                        'https://www.tiktok.com/@julianvasolo/video/7601024607000513812',
+  'Santiago':                       'https://www.tiktok.com/@julianvasolo/video/7603218531278163221',
+  'Real de Catorce':                'https://www.tiktok.com/@julianvasolo/video/7604717506736999701',
+  'San Luis Potosí':                'https://www.tiktok.com/@julianvasolo/video/7605383876336422165',
+  'San Luis Potosi':                'https://www.tiktok.com/@julianvasolo/video/7605383876336422165',
+  'San Luis Potosí City':           'https://www.tiktok.com/@julianvasolo/video/7605383876336422165',
+  'Bernal':                         'https://www.tiktok.com/@julianvasolo/video/7606918232003398933',
+  'Querétaro':                      'https://www.tiktok.com/@julianvasolo/video/7609041331830263061',
+  'Queretaro':                      'https://www.tiktok.com/@julianvasolo/video/7609041331830263061',
+  'Querétaro City':                 'https://www.tiktok.com/@julianvasolo/video/7609041331830263061',
+  'Mexico City':                    'https://www.tiktok.com/@julianvasolo/video/7610564100376104213',
+  'Miguel Hidalgo y Costilla':      'https://www.tiktok.com/@julianvasolo/video/7612345828165946645',
+  'San Gabriel Chilac':             'https://www.tiktok.com/@julianvasolo/video/7614708205016435988',
+  'Oaxaca City':                    'https://www.tiktok.com/@julianvasolo/video/7617149044216958229',
+  'Oaxaca':                         'https://www.tiktok.com/@julianvasolo/video/7617149044216958229',
+  'San José del Pacífico':          'https://www.tiktok.com/@julianvasolo/video/7620491107197127956',
+  'San Jose del Pacifico':          'https://www.tiktok.com/@julianvasolo/video/7620491107197127956',
+  'Mazunte':                        'https://www.tiktok.com/@julianvasolo/video/7623286894650035476',
+  'Salina Cruz':                    'https://www.tiktok.com/@julianvasolo/video/7623633143848766741',
+  'Puerto Arista':                  'https://www.tiktok.com/@julianvasolo/video/7624672123851722005',
+  'San Cristóbal de las Casas':     'https://www.tiktok.com/@julianvasolo/video/7625419895597026580',
+  'San Cristobal de las Casas':     'https://www.tiktok.com/@julianvasolo/video/7625419895597026580',
+  'S. Cristobal de Las Casas':      'https://www.tiktok.com/@julianvasolo/video/7625419895597026580',
+  'Ocosingo':                       'https://www.tiktok.com/@julianvasolo/video/7626939996561345813',
+  'Palenque':                       'https://www.tiktok.com/@julianvasolo/video/7627671331659681045',
+  'Villahermosa':                   'https://www.tiktok.com/@julianvasolo/video/7629171691154967828',
+  'Tenosique':                      'https://www.tiktok.com/@julianvasolo/video/7630264548531981588',
+  'Tenosique de Pino Suárez':       'https://www.tiktok.com/@julianvasolo/video/7630264548531981588',
+  'Flores':                         'https://www.tiktok.com/@julianvasolo/video/7631786826029714708',
+  'Tikal':                          'https://www.tiktok.com/@julianvasolo/video/7632883346338532609',
+  'Tikal National Park':            'https://www.tiktok.com/@julianvasolo/video/7632883346338532609',
+  'Poptún':                         'https://www.tiktok.com/@julianvasolo/video/7635044817000582417',
+  'Poptun':                         'https://www.tiktok.com/@julianvasolo/video/7635044817000582417',
+  'Río Dulce':                      'https://www.tiktok.com/@julianvasolo/video/7635434101293468929',
+  'Rio Dulce':                      'https://www.tiktok.com/@julianvasolo/video/7635434101293468929',
+  'Lanquín':                        'https://www.tiktok.com/@julianvasolo/video/7636177201565584641',
+  'Lanquin':                        'https://www.tiktok.com/@julianvasolo/video/7636177201565584641',
+  'San Cristóbal Verapaz':          'https://www.tiktok.com/@julianvasolo/video/7636983270881676560',
+  'San Cristobal Verapaz':          'https://www.tiktok.com/@julianvasolo/video/7636983270881676560',
+  'Chichicastenango':               'https://www.tiktok.com/@julianvasolo/video/7637544840254852373',
+  'Panajachel':                     'https://www.tiktok.com/@julianvasolo/video/7638395538387307792',
+  'San Marcos La Laguna':           'https://www.tiktok.com/@julianvasolo/video/7639372599901932801',
+  'Antigua Guatemala':              'https://www.tiktok.com/@julianvasolo/video/7639946425169693968',
+  'Antigua':                        'https://www.tiktok.com/@julianvasolo/video/7639946425169693968',
+  'Santa Ana':                      'https://www.tiktok.com/@julianvasolo/video/7641358038225538311',
+  'Juayúa':                         'https://www.tiktok.com/@julianvasolo/video/7643648513187892498',
+  'Juayua':                         'https://www.tiktok.com/@julianvasolo/video/7643648513187892498',
+  'Tamanique':                      'https://www.tiktok.com/@julianvasolo/video/7644709226354380050',
+  'Alegría':                        'https://www.tiktok.com/@julianvasolo/video/7645428312692608277',
+  'Alegria':                        'https://www.tiktok.com/@julianvasolo/video/7645428312692608277',
+  'La Unión':                       'https://www.tiktok.com/@julianvasolo/video/7646142801394126088',
+  'La Union':                       'https://www.tiktok.com/@julianvasolo/video/7646142801394126088',
+  'Amapala':                        'https://www.tiktok.com/@julianvasolo/video/7646631706547522837',
+  'Somoto':                         'https://www.tiktok.com/@julianvasolo/video/7646944612929539348',
+  'Somoto Canyon National Monument':'https://www.tiktok.com/@julianvasolo/video/7646944612929539348',
+  'León':                           'https://www.tiktok.com/@julianvasolo/video/7647390214717017352',
+  'Leon':                           'https://www.tiktok.com/@julianvasolo/video/7647390214717017352',
+  'Granada':                        'https://www.tiktok.com/@julianvasolo/video/7647611447635119380',
+  'Reserva Natural Laguna de Apoyo':'https://www.tiktok.com/@julianvasolo/video/7648057083891354898',
+  'Ometepe':                        'https://www.tiktok.com/@julianvasolo/video/7648478219682762004',
+  'Ometepe Island':                 'https://www.tiktok.com/@julianvasolo/video/7648478219682762004',
+  'San Juan del Sur':               'https://www.tiktok.com/@julianvasolo/video/7649083088672181525',
+  'Rincón de la Vieja':             'https://www.tiktok.com/@julianvasolo/video/7649864902240242951',
+  'Rincon de la Vieja':             'https://www.tiktok.com/@julianvasolo/video/7649864902240242951',
+  'Rincón de la Vieja Volcano National Park': 'https://www.tiktok.com/@julianvasolo/video/7649864902240242951',
+  'Bijagua':                        'https://www.tiktok.com/@julianvasolo/video/7651340292704029972',
+  'Tronadora':                      'https://www.tiktok.com/@julianvasolo/video/7652136039057722640',
+  'Monteverde':                     'https://www.tiktok.com/@julianvasolo/video/7653218649292967175',
+  'Monteverde Cloud Forest Reserve':'https://www.tiktok.com/@julianvasolo/video/7653218649292967175',
+  'Manuel Antonio':                 'https://www.tiktok.com/@julianvasolo/video/7653925280645516565',
+  'Manuel Antonio National Park':   'https://www.tiktok.com/@julianvasolo/video/7653925280645516565',
+  'Corcovado':                      'https://www.tiktok.com/@julianvasolo/video/7654658135293971730',
+  'Corcovado National Park':        'https://www.tiktok.com/@julianvasolo/video/7654658135293971730',
+  'Biolley':                        'https://www.tiktok.com/@julianvasolo/video/7655469025346080020',
+};
+
+const INSTAGRAMS = {
+  'New York':                       'https://www.instagram.com/p/DSYd4EwDUJ6/',
+  'Rehoboth Beach':                 'https://www.instagram.com/p/DSdSg2mCfbv/',
+  'Virginia Beach':                 'https://www.instagram.com/p/DSjJYitDYad/',
+  'Goose Creek State Park':         'https://www.instagram.com/p/DSn75nKDZ0L/',
+  'Carolina Beach':                 'https://www.instagram.com/p/DSvYcmaCcmD/',
+  'Murrells Inlet':                 'https://www.instagram.com/p/DS0wqhQCfyz/',
+  'Charleston':                     'https://www.instagram.com/p/DS6I4vdD_xN/',
+  'Auburn':                         'https://www.instagram.com/p/DS_hIqFDRLb/',
+  'Laurel':                         'https://www.instagram.com/p/DTE86qXjZAW/',
+  'South Toledo Bend':              'https://www.instagram.com/p/DTJ96XBjbLq/',
+  'Crockett':                       'https://www.instagram.com/p/DTT7aNtDVVd/',
+  'Somerville':                     'https://www.instagram.com/p/DTYzbdgieGD/',
+  'Austin':                         'https://www.instagram.com/p/DTeHLXfDaCx/',
+  'New Braunfels':                  'https://www.instagram.com/p/DToztMfjdEO/',
+  'Helotes':                        'https://www.instagram.com/p/DTtxpzjjbju/',
+  'Del Rio':                        'https://www.instagram.com/p/DT31LjDjbDN/',
+  'Monclova':                       'https://www.instagram.com/p/DT9GPkbDbMM/',
+  'Saltillo':                       'https://www.instagram.com/p/DUCSZc1Da3a/',
+  'Hidalgo':                        'https://www.instagram.com/p/DUH5g87jXdn/',
+  'Santiago':                       'https://www.instagram.com/p/DUMulmxjdZQ/',
+  'Real de Catorce':                'https://www.instagram.com/p/DUhiSJ0jfub/',
+  'San Luis Potosí':                'https://www.instagram.com/p/DUrc-TNDTai/',
+  'San Luis Potosi':                'https://www.instagram.com/p/DUrc-TNDTai/',
+  'San Luis Potosí City':           'https://www.instagram.com/p/DUrc-TNDTai/',
+  'Bernal':                         'https://www.instagram.com/p/DUwzMzkjUnP/',
+  'Querétaro':                      'https://www.instagram.com/p/DU_ge23CZ0i/',
+  'Queretaro':                      'https://www.instagram.com/p/DU_ge23CZ0i/',
+  'Querétaro City':                 'https://www.instagram.com/p/DU_ge23CZ0i/',
+  'Mexico City':                    'https://www.instagram.com/p/DVKEfN3Cf5W/',
+  'Miguel Hidalgo y Costilla':      'https://www.instagram.com/p/DVgfdvfij-9/',
+  'San Gabriel Chilac':             'https://www.instagram.com/p/DVm0TTgjcTd/',
+  'Oaxaca City':                    'https://www.instagram.com/p/DV3wnNwjUAC/',
+  'Oaxaca':                         'https://www.instagram.com/p/DV3wnNwjUAC/',
+  'San José del Pacífico':          'https://www.instagram.com/p/DWO-br_jaw_/',
+  'San Jose del Pacifico':          'https://www.instagram.com/p/DWO-br_jaw_/',
+  'Mazunte':                        'https://www.instagram.com/p/DWfJuKBDzXn/',
+  'Salina Cruz':                    'https://www.instagram.com/p/DWkyJQvimur/',
+  'Puerto Arista':                  'https://www.instagram.com/p/DWr9hA5ipOi/',
+  'San Cristóbal de las Casas':     'https://www.instagram.com/p/DWxLpVfiv_Q/',
+  'San Cristobal de las Casas':     'https://www.instagram.com/p/DWxLpVfiv_Q/',
+  'S. Cristobal de Las Casas':      'https://www.instagram.com/p/DWxLpVfiv_Q/',
+  'Ocosingo':                       'https://www.instagram.com/p/DW7upATip4C/',
+  'Palenque':                       'https://www.instagram.com/p/DXE9oNrCs1q/',
+  'Villahermosa':                   'https://www.instagram.com/p/DXLNqnKCneI/',
+  'Tenosique':                      'https://www.instagram.com/p/DXSzKSJCvrv/',
+  'Tenosique de Pino Suárez':       'https://www.instagram.com/p/DXSzKSJCvrv/',
+  'Flores':                         'https://www.instagram.com/p/DXdXUu7ihgC/',
+  'Tikal':                          'https://www.instagram.com/p/DXk8njJCnk-/',
+  'Tikal National Park':            'https://www.instagram.com/p/DXk8njJCnk-/',
+  'Poptún':                         'https://www.instagram.com/p/DXvVm-SKX-P/',
+  'Poptun':                         'https://www.instagram.com/p/DXvVm-SKX-P/',
+  'Río Dulce':                      'https://www.instagram.com/p/DX2qjBdqyvo/',
+  'Rio Dulce':                      'https://www.instagram.com/p/DX2qjBdqyvo/',
+  'Lanquín':                        'https://www.instagram.com/p/DX7u2d3qjOZ/',
+  'Lanquin':                        'https://www.instagram.com/p/DX7u2d3qjOZ/',
+  'San Cristóbal Verapaz':          'https://www.instagram.com/p/DYBbVmsqJZF/',
+  'San Cristobal Verapaz':          'https://www.instagram.com/p/DYBbVmsqJZF/',
+  'Chichicastenango':               'https://www.instagram.com/p/DYFUU8lKHYo/',
+  'Panajachel':                     'https://www.instagram.com/p/DYLMj8Vq_j7/',
+  'San Marcos La Laguna':           'https://www.instagram.com/p/DYQ4S_ZKHm1/',
+  'Antigua Guatemala':              'https://www.instagram.com/p/DYV-0mxqi04/',
+  'Antigua':                        'https://www.instagram.com/p/DYV-0mxqi04/',
+  'Santa Ana':                      'https://www.instagram.com/p/DYfwKwkK9QY/',
+  'Juayúa':                         'https://www.instagram.com/p/DYvpULmKHZ8/',
+  'Juayua':                         'https://www.instagram.com/p/DYvpULmKHZ8/',
+  'Tamanique':                      'https://www.instagram.com/p/DY3AHC6ql9V/',
+  'Alegría':                        'https://www.instagram.com/p/DY8A7WJKit8/',
+  'Alegria':                        'https://www.instagram.com/p/DY8A7WJKit8/',
+  'La Unión':                       'https://www.instagram.com/p/DZA9RY_qp8A/',
+  'La Union':                       'https://www.instagram.com/p/DZA9RY_qp8A/',
+  'Amapala':                        'https://www.instagram.com/p/DZLK2p5qJp1/',
+  'Somoto':                         'https://www.instagram.com/p/DZOQnmGKlWH/',
+  'Somoto Canyon National Monument':'https://www.instagram.com/p/DZOQnmGKlWH/',
+  'Granada':                        'https://www.instagram.com/p/DZQ3vFRq6sS/',
+  'Ometepe':                        'https://www.instagram.com/p/DZVZ-lhK1HJ/',
+  'Ometepe Island':                 'https://www.instagram.com/p/DZVZ-lhK1HJ/',
+  'San Juan del Sur':               'https://www.instagram.com/p/DZa0eQdKpn0/',
+  'Rincón de la Vieja':             'https://www.instagram.com/p/DZlCUMBq-tO/',
+  'Rincon de la Vieja':             'https://www.instagram.com/p/DZlCUMBq-tO/',
+  'Rincón de la Vieja Volcano National Park': 'https://www.instagram.com/p/DZlCUMBq-tO/',
+  'Monteverde':                     'https://www.instagram.com/p/DZvhhAMS8SW/',
+  'Monteverde Cloud Forest Reserve':'https://www.instagram.com/p/DZvhhAMS8SW/',
+  'Manuel Antonio':                 'https://www.instagram.com/p/DZ2_CgfyNpf/',
+  'Manuel Antonio National Park':   'https://www.instagram.com/p/DZ2_CgfyNpf/',
+  'Corcovado':                      'https://www.instagram.com/p/DZ8D4gEKBoO/',
+  'Corcovado National Park':        'https://www.instagram.com/p/DZ8D4gEKBoO/',
+  'Biolley':                        'https://www.instagram.com/p/DaBrwE2qUny/',
 };
 
 let map, markers = [], polyline, activeRow = null;
@@ -160,11 +334,15 @@ function renderTrip(data) {
     var flag = FLAGS[s.location.country_code] || '';
     var name = s.name || s.location.locality || s.location.country;
     var date = s.start_time ? s.start_time.slice(0,10) : '';
-    var ttUrl = TIKTOKS[name];
+    var socialUrl = PLATFORM === 'instagram' ? INSTAGRAMS[name] : TIKTOKS[name];
+    var watchLabel = PLATFORM === 'instagram' ? STRINGS.watchInstagram : STRINGS.watchTikTok;
+    var popBtnStyle = PLATFORM === 'instagram'
+      ? 'display:inline-block;margin-top:6px;font-size:11px;color:#fff;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:4px;padding:3px 8px;text-decoration:none'
+      : 'display:inline-block;margin-top:6px;font-size:11px;color:#fff;background:#000;border-radius:4px;padding:3px 8px;text-decoration:none';
     var popHtml = '<div style="font-size:13px;min-width:140px"><strong>' + name + '</strong><br>'
       + '<span style="color:#888">' + flag + ' ' + (s.location.full_detail || '') + '</span><br>'
       + '<span style="color:#aaa;font-size:11px">' + date + '</span>'
-      + (ttUrl ? '<br><a href="' + ttUrl + '" target="_blank" style="display:inline-block;margin-top:6px;font-size:11px;color:#fff;background:#000;border-radius:4px;padding:3px 8px;text-decoration:none">' + STRINGS.watchTikTok + '</a>' : '')
+      + (socialUrl ? '<br><a href="' + socialUrl + '" target="_blank" style="' + popBtnStyle + '">' + watchLabel + '</a>' : '')
       + '</div>';
     m.bindPopup(popHtml, { maxWidth: 240 });
     markers.push(m);
@@ -178,7 +356,9 @@ function renderTrip(data) {
     var flag = FLAGS[s.location.country_code] || '';
     var date = s.start_time ? s.start_time.slice(0,10) : '';
     var imgUrl = s.first_media_item && s.first_media_item.large_thumbnail_path;
-    var ttUrl = TIKTOKS[name];
+    var socialUrl = PLATFORM === 'instagram' ? INSTAGRAMS[name] : TIKTOKS[name];
+    var listBtnClass = PLATFORM === 'instagram' ? 'ig-btn' : 'tt-btn';
+    var listBtnLabel = PLATFORM === 'instagram' ? STRINGS.igBtn : STRINGS.tiktokBtn;
 
     var row = document.createElement('div');
     row.className = 'step-row';
@@ -189,7 +369,7 @@ function renderTrip(data) {
       + '<div class="step-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + name + '</div>'
       + '<div class="step-detail">' + flag + ' ' + (s.location.full_detail || '') + ' · ' + date + '</div>'
       + '</div>'
-      + (ttUrl ? '<a class="tt-btn" href="' + ttUrl + '" target="_blank" onclick="event.stopPropagation()">' + STRINGS.tiktokBtn + '</a>' : '')
+      + (socialUrl ? '<a class="' + listBtnClass + '" href="' + socialUrl + '" target="_blank" onclick="event.stopPropagation()">' + listBtnLabel + '</a>' : '')
       + '<div class="step-num">#' + (i+1) + '</div>';
 
     row.addEventListener('click', function() {
